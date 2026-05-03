@@ -4,7 +4,6 @@ import numpy as np
 import os
 import urllib.request
 
-# Download the face landmarker model if not present
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'face_landmarker.task')
 
 def download_model():
@@ -20,6 +19,7 @@ from mediapipe.tasks import python as mp_python
 from mediapipe.tasks.python import vision as mp_vision
 from mediapipe.tasks.python.vision import FaceLandmarker, FaceLandmarkerOptions, RunningMode
 
+
 class FaceDetector:
     def __init__(self):
         options = FaceLandmarkerOptions(
@@ -34,19 +34,16 @@ class FaceDetector:
         print("✅ FaceDetector initialised")
 
     def get_landmarks(self, frame_bgr):
+        import mediapipe as mp
         frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
         h, w = frame_bgr.shape[:2]
-
-        import mediapipe as mp
         mp_image = mp.Image(
             image_format=mp.ImageFormat.SRGB,
             data=frame_rgb
         )
         result = self.detector.detect(mp_image)
-
         if not result.face_landmarks:
             return None
-
         landmarks = result.face_landmarks[0]
         points = np.array(
             [[lm.x * w, lm.y * h, lm.z * w] for lm in landmarks],
@@ -89,9 +86,7 @@ if __name__ == "__main__":
         ret, frame = cap.read()
         if not ret:
             break
-
         landmarks = detector.get_landmarks(frame)
-
         if landmarks is not None:
             for pt in landmarks:
                 cv2.circle(frame, (int(pt[0]), int(pt[1])), 1, (0, 255, 0), -1)
@@ -100,7 +95,6 @@ if __name__ == "__main__":
         else:
             cv2.putText(frame, "No face detected",
                         (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
-
         cv2.imshow("Face Detector Test", frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -108,3 +102,4 @@ if __name__ == "__main__":
     cap.release()
     cv2.destroyAllWindows()
     detector.close()
+    print("✅ Test complete")
