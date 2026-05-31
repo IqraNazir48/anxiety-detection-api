@@ -9,6 +9,9 @@ models/*.h5
 # Data files
 data/raw/
 data/processed/
+data/processed.zip
+data/raw.zip
+
 
 # Environment variables
 .env
